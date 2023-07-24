@@ -1,0 +1,23 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "@app/auth-lib/(.*)": "<rootDir>/../libs/auth-lib/src/$1",
+    "@app/auth-lib": "<rootDir>/../libs/auth-lib/src",
+    "@app/database/(.*)": "<rootDir>/../libs/database/src/$1",
+    "@app/database": "<rootDir>/../libs/database/src",
+    "@app/db-lib/(.*)": "<rootDir>/../libs/db-lib/src/$1",
+    "@app/db-lib": "<rootDir>/../libs/db-lib/src",
+    "@app/users-lib/(.*)": "<rootDir>/../libs/users-lib/src/$1",
+    "@app/users-lib": "<rootDir>/../libs/users-lib/src"
+  }
+}
