@@ -26,7 +26,9 @@
       "@app/db-lib": ["libs/db-lib/src"],
       "@app/db-lib/*": ["libs/db-lib/src/*"],
       "@app/users-lib": ["libs/users-lib/src"],
-      "@app/users-lib/*": ["libs/users-lib/src/*"]
+      "@app/users-lib/*": ["libs/users-lib/src/*"],
+      "@app/utils-lib": ["libs/utils-lib/src"],
+      "@app/utils-lib/*": ["libs/utils-lib/src/*"]
     }
   }
 }

@@ -18,6 +18,8 @@
     "@app/db-lib/(.*)": "<rootDir>/../libs/db-lib/src/$1",
     "@app/db-lib": "<rootDir>/../libs/db-lib/src",
     "@app/users-lib/(.*)": "<rootDir>/../libs/users-lib/src/$1",
-    "@app/users-lib": "<rootDir>/../libs/users-lib/src"
+    "@app/users-lib": "<rootDir>/../libs/users-lib/src",
+    "@app/utils-lib/(.*)": "<rootDir>/../libs/utils-lib/src/$1",
+    "@app/utils-lib": "<rootDir>/../libs/utils-lib/src"
   }
 }

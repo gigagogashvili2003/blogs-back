@@ -57,10 +57,6 @@ export class User extends Model<User> {
   @Column({
     allowNull: false,
     type: DataType.STRING,
-    validate: {
-      len: allowedPasswordLength,
-      msg: 'Password must be between 8 and 50 characters.',
-    },
   })
   password: string;
 
@@ -77,5 +73,5 @@ export class User extends Model<User> {
     field: 'is_verified',
     type: DataType.BOOLEAN,
   })
-  isVerified: boolean;
+  isVerified: boolean = false;
 }
