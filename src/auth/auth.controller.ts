@@ -1,7 +1,9 @@
-import { AuthLibService } from '@app/auth-lib';
+import { AccessTokenGuard, AuthLibService } from '@app/auth-lib';
 import { CreateUserDto } from '@app/users-lib/dtos.ts/create-user.dto';
 import { LocalGuard } from '@app/auth-lib/guards/local-strategy.guard';
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards, Get, Res } from '@nestjs/common';
+import { RequestWithUser } from '@app/common-lib/interfaces/request-with-user';
+import { User } from '@app/users-lib/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -14,8 +16,13 @@ export class AuthController {
 
   @UseGuards(LocalGuard)
   @Post('signin')
-  async signin(@Req() request) {
-    console.log(request.user);
-    return await this.authLibService.signin();
+  async signin(@Req() request: RequestWithUser<User>) {
+    return await this.authLibService.signin(request);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Get('hello')
+  async getHello() {
+    return 'HELLO';
   }
 }

@@ -19,16 +19,60 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/auth-lib": ["libs/auth-lib/src"],
-      "@app/auth-lib/*": ["libs/auth-lib/src/*"],
-      "@app/database": ["libs/database/src"],
-      "@app/database/*": ["libs/database/src/*"],
-      "@app/db-lib": ["libs/db-lib/src"],
-      "@app/db-lib/*": ["libs/db-lib/src/*"],
-      "@app/users-lib": ["libs/users-lib/src"],
-      "@app/users-lib/*": ["libs/users-lib/src/*"],
-      "@app/utils-lib": ["libs/utils-lib/src"],
-      "@app/utils-lib/*": ["libs/utils-lib/src/*"]
+      "@app/auth-lib": [
+        "libs/auth-lib/src"
+      ],
+      "@app/auth-lib/*": [
+        "libs/auth-lib/src/*"
+      ],
+      "@app/database": [
+        "libs/database/src"
+      ],
+      "@app/database/*": [
+        "libs/database/src/*"
+      ],
+      "@app/db-lib": [
+        "libs/db-lib/src"
+      ],
+      "@app/db-lib/*": [
+        "libs/db-lib/src/*"
+      ],
+      "@app/users-lib": [
+        "libs/users-lib/src"
+      ],
+      "@app/users-lib/*": [
+        "libs/users-lib/src/*"
+      ],
+      "@app/utils-lib": [
+        "libs/utils-lib/src"
+      ],
+      "@app/utils-lib/*": [
+        "libs/utils-lib/src/*"
+      ],
+      "@app/common-lib": [
+        "libs/common-lib/src"
+      ],
+      "@app/common-lib/*": [
+        "libs/common-lib/src/*"
+      ],
+      "@app/cache-lib": [
+        "libs/cache-lib/src"
+      ],
+      "@app/cache-lib/*": [
+        "libs/cache-lib/src/*"
+      ],
+      "@app/notifications-lib": [
+        "libs/notifications-lib/src"
+      ],
+      "@app/notifications-lib/*": [
+        "libs/notifications-lib/src/*"
+      ],
+      "@app/redis-lib": [
+        "libs/redis-lib/src"
+      ],
+      "@app/redis-lib/*": [
+        "libs/redis-lib/src/*"
+      ]
     }
   }
 }

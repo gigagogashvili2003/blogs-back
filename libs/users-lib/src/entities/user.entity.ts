@@ -1,6 +1,5 @@
 import { Table, Column, DataType, Model } from 'sequelize-typescript';
 import { UserRole } from '../enums/user.enums';
-import { allowedPasswordLength } from '../constants/user.constants';
 
 @Table
 export class User extends Model<User> {

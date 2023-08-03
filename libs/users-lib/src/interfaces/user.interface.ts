@@ -10,3 +10,15 @@ export interface IUser {
   role: UserRole;
   isVerified: boolean;
 }
+
+export interface IUserResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  birthDate: Date;
+  role: UserRole;
+  isVerified: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}

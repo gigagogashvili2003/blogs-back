@@ -4,7 +4,11 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": true,
-    "webpack": true
+    "webpack": true,
+    "assets": [
+      "./libs/notifications-lib/src/templates/**/*"
+    ],
+    "watchAssets": true
   },
   "projects": {
     "auth-lib": {
@@ -50,6 +54,42 @@
       "sourceRoot": "libs/utils-lib/src",
       "compilerOptions": {
         "tsConfigPath": "libs/utils-lib/tsconfig.lib.json"
+      }
+    },
+    "common-lib": {
+      "type": "library",
+      "root": "libs/common-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/common-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/common-lib/tsconfig.lib.json"
+      }
+    },
+    "cache-lib": {
+      "type": "library",
+      "root": "libs/cache-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/cache-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/cache-lib/tsconfig.lib.json"
+      }
+    },
+    "notifications-lib": {
+      "type": "library",
+      "root": "libs/notifications-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/notifications-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/notifications-lib/tsconfig.lib.json"
+      }
+    },
+    "redis-lib": {
+      "type": "library",
+      "root": "libs/redis-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/redis-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redis-lib/tsconfig.lib.json"
       }
     }
   }

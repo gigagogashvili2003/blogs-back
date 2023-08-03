@@ -20,6 +20,14 @@
     "@app/users-lib/(.*)": "<rootDir>/../libs/users-lib/src/$1",
     "@app/users-lib": "<rootDir>/../libs/users-lib/src",
     "@app/utils-lib/(.*)": "<rootDir>/../libs/utils-lib/src/$1",
-    "@app/utils-lib": "<rootDir>/../libs/utils-lib/src"
+    "@app/utils-lib": "<rootDir>/../libs/utils-lib/src",
+    "@app/common-lib/(.*)": "<rootDir>/../libs/common-lib/src/$1",
+    "@app/common-lib": "<rootDir>/../libs/common-lib/src",
+    "@app/cache-lib/(.*)": "<rootDir>/../libs/cache-lib/src/$1",
+    "@app/cache-lib": "<rootDir>/../libs/cache-lib/src",
+    "@app/notifications-lib/(.*)": "<rootDir>/../libs/notifications-lib/src/$1",
+    "@app/notifications-lib": "<rootDir>/../libs/notifications-lib/src",
+    "@app/redis-lib/(.*)": "<rootDir>/../libs/redis-lib/src/$1",
+    "@app/redis-lib": "<rootDir>/../libs/redis-lib/src"
   }
 }
