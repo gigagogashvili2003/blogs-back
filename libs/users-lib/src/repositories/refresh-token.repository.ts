@@ -7,14 +7,15 @@ import { IRefreshToken } from '../interfaces/refresh-token.interface';
 @Injectable()
 export class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
   constructor(@Inject(REFRESH_TOKEN_REPOSITORY) private readonly refreshTokenRepository: typeof RefreshToken) {}
+  async createToken(entity: IRefreshToken) {
+    return await this.refreshTokenRepository.create({ ...entity });
+  }
   async findWithId(id: number): Promise<RefreshToken> {
     return await this.refreshTokenRepository.findOne({ where: { userId: id } });
   }
-  findWithToken(token: string): Promise<RefreshToken> {
-    throw new Error('Method not implemented.');
-  }
-
-  async createToken(entity: IRefreshToken) {
-    return await this.refreshTokenRepository.create({ ...entity });
+  async removeToken(id: number) {
+    const token = await this.findWithId(id);
+    token.token = null;
+    return await token.save();
   }
 }

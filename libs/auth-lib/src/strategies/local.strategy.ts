@@ -7,7 +7,10 @@ import { CryptoLibService } from '@app/utils-lib';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   constructor(private readonly userRepository: UserRepository, private readonly cryptoService: CryptoLibService) {
-    super();
+    super({
+      usernameField: 'email',
+      passwordField: 'password',
+    });
   }
   async validate(username: string, password: string): Promise<any> {
     try {

@@ -4,13 +4,14 @@ import { CreateUserDto } from '@app/users-lib/dtos.ts/create-user.dto';
 import { User } from '@app/users-lib/entities/user.entity';
 import { UserRole } from '@app/users-lib/enums/user.enums';
 import { CryptoLibService, JwtService, generateOtpCode } from '@app/utils-lib';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { RedisLibRepository } from '@app/redis-lib';
-import { RequestWithUser } from '@app/common-lib/interfaces/request-with-user';
+import { RequestWithUser, UserWithoutPassword } from '@app/common-lib/interfaces/request-with-user';
 import { UserJwtPayload } from '@app/utils-lib/interfaces/user-jwt.payload';
 import { RefreshTokenRepository } from '@app/users-lib/repositories/refresh-token.repository';
 import { IRefreshToken } from '@app/users-lib/interfaces/refresh-token.interface';
 import { RefreshToken } from '@app/users-lib/entities/refresh-token.entity';
+import { OtpDto } from '@app/users-lib/dtos.ts/otp.dto';
 
 @Injectable()
 export class AuthLibService {
@@ -23,7 +24,7 @@ export class AuthLibService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  async signup(createUserDto: CreateUserDto): Promise<User> {
+  async signup(createUserDto: CreateUserDto) {
     try {
       const { password, email, username } = createUserDto;
 
@@ -37,12 +38,16 @@ export class AuthLibService {
 
       await this.mailSenderService.sendEmail(email, 'Signup Notification', 'You have succesfully signed up');
 
-      return await this.userRepository.createUser({
+      const user = await this.userRepository.createUser({
         ...createUserDto,
         password: hashedPassword,
         role: UserRole.USER,
         isVerified: false,
       });
+
+      const { password: p, ...userWithoutPassword } = user;
+
+      return { userInfo: userWithoutPassword };
     } catch (err) {
       throw err;
     }
@@ -74,6 +79,47 @@ export class AuthLibService {
     }
   }
 
+  async sendVerificationCode(user: UserWithoutPassword) {
+    try {
+      if (user.isVerified) throw new ConflictException('User is already verified!');
+      const { email } = user;
+      const otp = generateOtpCode();
+
+      await this.redisRepository.set(email, otp, 900);
+      await this.mailSenderService.sendEmail(
+        email,
+        'Account Verification',
+        `Verification Code: ${otp}, this code is valid for 15 minutes.`,
+      );
+
+      return 'Verification code has been sent';
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async verifyAccount(reqUser: UserWithoutPassword, otpDto: OtpDto) {
+    try {
+      const { email } = reqUser;
+
+      const savedCode = Number(await this.redisRepository.get(email));
+
+      if (!savedCode) throw new ConflictException('There is not any code that is linked to that email');
+
+      if (otpDto.code !== savedCode) throw new ConflictException('Provided otp is wrong');
+
+      const user = await this.userRepository.findUserWithEmail(email);
+      user.isVerified = true;
+      await user.save();
+      await this.redisRepository.del([email]);
+      await this.mailSenderService.sendEmail(email, 'Account Verification', 'Your account has been verified!');
+
+      return 'Your account has been verified';
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async saveRefreshToken(userId: number, token: string): Promise<RefreshToken> {
     try {
       const tokenExists = (await this.refreshTokenRepository.findWithId(userId)).get({ plain: true });
@@ -89,21 +135,41 @@ export class AuthLibService {
       throw err;
     }
   }
-
-  // Local Strategy
-  async validateUser(username: string, password: string) {
+  async signout(request: RequestWithUser<User>) {
     try {
-      const user = (await this.userRepository.findUserWithUsername(username)).get({ plain: true });
+      const { id } = request.user;
+      await this.refreshTokenRepository.removeToken(id);
+      request.res.clearCookie('refresh_token');
+      return 'Signed out';
+    } catch (err) {
+      throw err;
+    }
+  }
 
-      if (!user) throw new NotFoundException('User Not Found!');
+  async removeRefreshToken(id: number) {
+    try {
+      return await this.refreshTokenRepository.removeToken(id);
+    } catch (err) {
+      throw err;
+    }
+  }
 
-      const { password: hashedPassword, ...userWithoutPassword } = user;
+  async refreshToken(user: UserWithoutPassword) {
+    try {
+      const { email, username, id } = user;
+      const payload: UserJwtPayload = { email, username, userId: id };
+      const accessToken = await this.jwtService.sign(payload);
+      return { token: accessToken };
+    } catch (err) {
+      throw err;
+    }
+  }
 
-      const doesPasswordsMatch = await this.cryptoService.comparePassword(password, hashedPassword);
-
-      if (!doesPasswordsMatch) throw new ConflictException('Invalid Password!');
-
-      return userWithoutPassword;
+  async ping() {
+    try {
+      const user = await this.userRepository.findUserWithEmail('thegogashvili@gmail.com');
+      console.log(user.email);
+      return 'Pong';
     } catch (err) {
       throw err;
     }

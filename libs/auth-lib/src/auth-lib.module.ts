@@ -5,11 +5,10 @@ import { UtilsLibModule } from '@app/utils-lib';
 import { PassportModule } from '@nestjs/passport';
 import { NotificationsLibModule } from '@app/notifications-lib';
 import { RedisLibModule } from '@app/redis-lib';
-import { AccessTokenStrategy } from './strategies/access-token.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
+import { AccessTokenStrategy, IsVerifiedStrategy, LocalStrategy, RefreshTokenStrategy } from './strategies';
 @Module({
   imports: [PassportModule, UsersLibModule, UtilsLibModule, NotificationsLibModule, RedisLibModule],
-  providers: [AuthLibService, AccessTokenStrategy, LocalStrategy],
+  providers: [AuthLibService, AccessTokenStrategy, IsVerifiedStrategy, LocalStrategy, RefreshTokenStrategy],
   exports: [AuthLibService],
 })
 export class AuthLibModule {}
