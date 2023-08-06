@@ -4,13 +4,14 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserRepository } from '@app/users-lib';
 import { UserJwtPayload } from '@app/utils-lib/interfaces/user-jwt.payload';
+import { ACCESS_TOKEN_SECRET, IS_VERIFIED } from '../constants';
 
 @Injectable()
-export class IsVerifiedStrategy extends PassportStrategy(Strategy, 'is_verified') {
+export class IsVerifiedStrategy extends PassportStrategy(Strategy, IS_VERIFIED) {
   constructor(private readonly configService: ConfigService, private readonly userRepository: UserRepository) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('ACCESS_TOKEN_SECRET'),
+      secretOrKey: configService.get(ACCESS_TOKEN_SECRET),
     });
   }
 

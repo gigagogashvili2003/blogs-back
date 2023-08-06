@@ -3,9 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '@app/users-lib';
 import { CryptoLibService } from '@app/utils-lib';
+import { LOCAL } from '../constants';
 
 @Injectable()
-export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
+export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
   constructor(private readonly userRepository: UserRepository, private readonly cryptoService: CryptoLibService) {
     super({
       usernameField: 'email',

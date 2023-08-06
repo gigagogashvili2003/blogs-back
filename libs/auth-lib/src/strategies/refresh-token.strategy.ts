@@ -5,15 +5,16 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { REFRESH_TOKEN, REFRESH_TOKEN_SECRET } from '../constants';
 
 @Injectable()
-export class RefreshTokenStrategy extends PassportStrategy(Strategy, 'refresh_token') {
+export class RefreshTokenStrategy extends PassportStrategy(Strategy, REFRESH_TOKEN) {
   constructor(private readonly configService: ConfigService, private readonly userRepository: UserRepository) {
     super({
-      secretOrKey: configService.get('REFRESH_TOKEN_SECRET'),
+      secretOrKey: configService.get(REFRESH_TOKEN_SECRET),
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request: Request) => {
-          const token = request.cookies['refresh_token'];
+          const token = request.cookies[REFRESH_TOKEN];
 
           if (!token) {
             return null;
