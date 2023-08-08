@@ -9,13 +9,19 @@ export class MailSenderService {
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        type: 'OAuth2',
         user: this.configService.get('EMAIL'),
-        clientSecret: this.configService.get('OAUTH_CLIENT_SECRET'),
-        clientId: this.configService.get('OAUTH_CLIENT_ID'),
-        refreshToken: this.configService.get('OAUTH_REFRESH_TOKEN'),
-        accessToken: this.configService.get('OAUTH_ACCESS_TOKEN'),
+        pass: this.configService.get('PASSWORD'),
       },
+
+      // auth: {
+      //   type: 'OAuth2',
+      //   user: this.configService.get('EMAIL'),
+
+      //   clientSecret: this.configService.get('OAUTH_CLIENT_SECRET'),
+      //   clientId: this.configService.get('OAUTH_CLIENT_ID'),
+      //   refreshToken: this.configService.get('OAUTH_REFRESH_TOKEN'),
+      //   accessToken: this.configService.get('OAUTH_ACCESS_TOKEN'),
+      // },
     });
   }
 

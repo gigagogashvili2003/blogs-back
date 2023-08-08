@@ -6,7 +6,7 @@ services:
     ports:
       - '5432:5432'
     environment:
-      - POSTGRES_USER=thegogashvili
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=giga
       - POSTGRES_DB=postgres
     volumes:

@@ -24,7 +24,7 @@ export const databaseProviders = [
       }
       const sequelize = new Sequelize({ ...config, define: { underscored: true } });
       sequelize.addModels([User, RefreshToken]);
-      await sequelize.sync({});
+      await sequelize.sync();
       return sequelize;
     },
   },

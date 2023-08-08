@@ -31,7 +31,7 @@ export class RefreshTokenStrategy extends PassportStrategy(Strategy, REFRESH_TOK
     }
 
     const { userId } = payload;
-    const user = await this.userRepository.findUserExcludePassword(userId);
+    const user = await this.userRepository.findUserWithId(userId);
 
     if (!user) {
       throw new UnauthorizedException();

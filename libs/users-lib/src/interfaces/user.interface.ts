@@ -9,6 +9,9 @@ export interface IUser {
   birthDate: Date;
   role: UserRole;
   isVerified: boolean;
+  avatar: Buffer | null;
+  isDeactivated: boolean;
+  accountDeactivationDate: Date | null;
 }
 
 export interface IUserResponse {

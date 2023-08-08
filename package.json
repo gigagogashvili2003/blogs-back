@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.385.0",
     "@nestjs-modules/mailer": "^1.9.1",
     "@nestjs/cache-manager": "^2.1.0",
     "@nestjs/common": "^10.0.0",
@@ -28,7 +29,10 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/passport": "^10.0.0",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^3.0.2",
     "@nestjs/sequelize": "^10.0.0",
+    "@types/aws-sdk": "^2.7.0",
+    "aws-sdk": "^2.1430.0",
     "bcrypt": "^5.1.0",
     "cache-manager": "^5.2.3",
     "cache-manager-redis-store": "^3.0.1",
@@ -57,8 +61,10 @@
     "@nestjs/testing": "^10.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/cookie-parser": "^1.4.3",
+    "@types/cron": "^2.4.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
+    "@types/multer": "^1.4.7",
     "@types/node": "^20.3.1",
     "@types/nodemailer": "^6.4.9",
     "@types/passport-jwt": "^3.0.9",
@@ -110,7 +116,9 @@
       "^@app/common-lib(|/.*)$": "<rootDir>/libs/common-lib/src/$1",
       "^@app/cache-lib(|/.*)$": "<rootDir>/libs/cache-lib/src/$1",
       "^@app/notifications-lib(|/.*)$": "<rootDir>/libs/notifications-lib/src/$1",
-      "^@app/redis-lib(|/.*)$": "<rootDir>/libs/redis-lib/src/$1"
+      "^@app/redis-lib(|/.*)$": "<rootDir>/libs/redis-lib/src/$1",
+      "^@app/aws-lib(|/.*)$": "<rootDir>/libs/aws-lib/src/$1",
+      "^@app/task-lib(|/.*)$": "<rootDir>/libs/task-lib/src/$1"
     }
   }
 }

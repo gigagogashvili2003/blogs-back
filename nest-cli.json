@@ -91,6 +91,24 @@
       "compilerOptions": {
         "tsConfigPath": "libs/redis-lib/tsconfig.lib.json"
       }
+    },
+    "aws-lib": {
+      "type": "library",
+      "root": "libs/aws-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/aws-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/aws-lib/tsconfig.lib.json"
+      }
+    },
+    "task-lib": {
+      "type": "library",
+      "root": "libs/task-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/task-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/task-lib/tsconfig.lib.json"
+      }
     }
   }
 }

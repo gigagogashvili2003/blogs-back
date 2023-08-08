@@ -28,8 +28,8 @@ export class AuthLibService {
     try {
       const { password, email, username } = createUserDto;
 
-      const userExistsWithEmail = await this.userRepository.findUserWithEmail(email);
-      const userExistsWithUsername = await this.userRepository.findUserWithUsername(username);
+      const userExistsWithEmail = await this.userRepository.findOne({ where: { email } });
+      const userExistsWithUsername = await this.userRepository.findOne({ where: { username } });
 
       if (userExistsWithEmail) throw new ConflictException('User with given email already exists!');
       if (userExistsWithUsername) throw new ConflictException('User with given username already exists!');
@@ -43,6 +43,9 @@ export class AuthLibService {
         password: hashedPassword,
         role: UserRole.USER,
         isVerified: false,
+        avatar: null,
+        isDeactivated: false,
+        accountDeactivationDate: null,
       });
 
       const { password: p, ...userWithoutPassword } = user;
@@ -108,7 +111,7 @@ export class AuthLibService {
 
       if (otpDto.code !== savedCode) throw new ConflictException('Provided otp is wrong');
 
-      const user = await this.userRepository.findUserWithEmail(email);
+      const user = await this.userRepository.findOne({ where: { email } });
       user.isVerified = true;
       await user.save();
       await this.redisRepository.del([email]);
@@ -122,7 +125,7 @@ export class AuthLibService {
 
   async saveRefreshToken(userId: number, token: string): Promise<RefreshToken> {
     try {
-      const tokenExists = (await this.refreshTokenRepository.findWithId(userId)).get({ plain: true });
+      const tokenExists = await this.refreshTokenRepository.findOne({ where: { userId } });
       if (tokenExists) return tokenExists;
 
       const entity: IRefreshToken = {
@@ -167,8 +170,6 @@ export class AuthLibService {
 
   async ping() {
     try {
-      const user = await this.userRepository.findUserWithEmail('thegogashvili@gmail.com');
-      console.log(user.email);
       return 'Pong';
     } catch (err) {
       throw err;

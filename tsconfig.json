@@ -72,6 +72,18 @@
       ],
       "@app/redis-lib/*": [
         "libs/redis-lib/src/*"
+      ],
+      "@app/aws-lib": [
+        "libs/aws-lib/src"
+      ],
+      "@app/aws-lib/*": [
+        "libs/aws-lib/src/*"
+      ],
+      "@app/task-lib": [
+        "libs/task-lib/src"
+      ],
+      "@app/task-lib/*": [
+        "libs/task-lib/src/*"
       ]
     }
   }

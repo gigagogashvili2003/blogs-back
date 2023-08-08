@@ -4,6 +4,7 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { UserRepository } from '@app/users-lib';
 import { CryptoLibService } from '@app/utils-lib';
 import { LOCAL } from '../constants';
+import { where } from 'sequelize';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
@@ -13,9 +14,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
       passwordField: 'password',
     });
   }
-  async validate(username: string, password: string): Promise<any> {
+  async validate(email: string, password: string): Promise<any> {
     try {
-      const user = (await this.userRepository.findUserWithUsername(username)).get({ plain: true });
+      console.log(email, password);
+      const user = (await this.userRepository.findOne({ where: { email } })).get({ plain: true });
 
       if (!user) throw new UnauthorizedException();
 
