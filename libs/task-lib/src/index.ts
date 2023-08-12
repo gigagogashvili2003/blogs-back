@@ -1,2 +1,3 @@
 export * from './task-lib.module';
-export * from './task-lib.service';
+export * from './services/task-lib.service';
+export * from './services';

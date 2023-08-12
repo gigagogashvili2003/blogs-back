@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { UsersLibService } from './users-lib.service';
-import { UserRepository } from './repositories';
-import { usersProviders } from './providers/users.providers';
-import { RefreshTokenRepository } from './repositories/refresh-token.repository';
+import { RefreshTokenRepository, UserRepository } from './repositories';
 import { AwsLibModule } from '@app/aws-lib';
+import { UsersLibService } from './services';
+import { usersProviders } from './providers';
 
 @Module({
   imports: [AwsLibModule],

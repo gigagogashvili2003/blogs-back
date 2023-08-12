@@ -1,7 +1,7 @@
 import { FileService } from '@app/aws-lib/services';
 import { UserWithoutPassword } from '@app/common-lib/interfaces/request-with-user';
 import { ConflictException, Injectable } from '@nestjs/common';
-import { UserRepository } from './repositories';
+import { UserRepository } from '../repositories';
 @Injectable()
 export class UsersLibService {
   constructor(private readonly fileService: FileService, private readonly userRepository: UserRepository) {}
