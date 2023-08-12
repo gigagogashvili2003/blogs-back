@@ -21,6 +21,18 @@ services:
       - redis-data:/data
     command: redis-server --appendonly yes
 
+  api:
+    build: .
+    env_file:
+      - './.env'
+    volumes:
+      - .:/app
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - redis
+
 volumes:
   postgres_data:
   redis-data:

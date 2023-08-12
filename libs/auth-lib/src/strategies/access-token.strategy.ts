@@ -17,10 +17,10 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, ACCESS_TOKEN
   }
 
   public async validate(payload: UserJwtPayload): Promise<IUserResponse> {
-    const user = await this.userRepository.findUserWithId(payload.userId);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
+    const user = await this.userRepository.findUserWithId(payload.userId, {
+      attributes: { exclude: ['password'] },
+    });
+    if (!user) throw new UnauthorizedException('You are not authorized');
     return user;
   }
 }

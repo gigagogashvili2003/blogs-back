@@ -15,6 +15,7 @@ export class User extends Model<User> {
   @Column({
     type: DataType.STRING,
     allowNull: true,
+    defaultValue: null,
   })
   avatar: string;
 
@@ -22,6 +23,7 @@ export class User extends Model<User> {
     type: DataType.BOOLEAN,
     allowNull: false,
     field: 'is_deactivated',
+    defaultValue: false,
   })
   isDeactivated: boolean;
 
@@ -29,6 +31,7 @@ export class User extends Model<User> {
     type: DataType.DATE,
     allowNull: true,
     field: 'account_deactivation_date',
+    defaultValue: null,
   })
   accountDeactivationDate: Date | null;
 
@@ -85,12 +88,14 @@ export class User extends Model<User> {
     validate: {
       isIn: [Object.values(UserRole)],
     },
+    defaultValue: UserRole.USER,
   })
   role: UserRole;
 
   @Column({
     field: 'is_verified',
     type: DataType.BOOLEAN,
+    defaultValue: false,
   })
   isVerified: boolean = false;
 }

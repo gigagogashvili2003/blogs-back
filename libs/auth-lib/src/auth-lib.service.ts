@@ -1,8 +1,7 @@
 import { MailSenderService } from '@app/notifications-lib';
-import { UserRepository } from '@app/users-lib';
+import { UserRepository, UsersLibService } from '@app/users-lib';
 import { CreateUserDto } from '@app/users-lib/dtos.ts/create-user.dto';
 import { User } from '@app/users-lib/entities/user.entity';
-import { UserRole } from '@app/users-lib/enums/user.enums';
 import { CryptoLibService, JwtService, generateOtpCode } from '@app/utils-lib';
 import { ConflictException, Injectable } from '@nestjs/common';
 import { RedisLibRepository } from '@app/redis-lib';
@@ -22,6 +21,7 @@ export class AuthLibService {
     private readonly jwtService: JwtService,
     private readonly redisRepository: RedisLibRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    private readonly usersLibService: UsersLibService,
   ) {}
 
   async signup(createUserDto: CreateUserDto) {
@@ -38,19 +38,12 @@ export class AuthLibService {
 
       await this.mailSenderService.sendEmail(email, 'Signup Notification', 'You have succesfully signed up');
 
-      const user = await this.userRepository.createUser({
+      await this.userRepository.createUser({
         ...createUserDto,
         password: hashedPassword,
-        role: UserRole.USER,
-        isVerified: false,
-        avatar: null,
-        isDeactivated: false,
-        accountDeactivationDate: null,
       });
 
-      const { password: p, ...userWithoutPassword } = user;
-
-      return { userInfo: userWithoutPassword };
+      return 'You succesfully signed up, please verify your account to have full access on website';
     } catch (err) {
       throw err;
     }
@@ -58,12 +51,19 @@ export class AuthLibService {
 
   async signin(request: RequestWithUser<User>) {
     try {
-      const { id, email, username } = request.user;
-      const payload: UserJwtPayload = {
-        userId: id,
-        email,
-        username,
-      };
+      const { id, email, username, isDeactivated } = request.user;
+
+      // Cancel deactivation if deactivated
+      if (isDeactivated) {
+        await this.usersLibService.cancelDeactivation(request.user);
+        await this.mailSenderService.sendEmail(
+          email,
+          'Account Deactivation',
+          'while your account was deactivated, you logged in the system, for that reason account deactivation process has been cancelled.',
+        );
+      }
+
+      const payload: UserJwtPayload = { userId: id, email, username };
 
       const accessToken = await this.jwtService.sign(payload);
       const refreshToken = await this.jwtService.sign(payload, 'refresh_token');
@@ -71,12 +71,7 @@ export class AuthLibService {
       const savedRefreshToken = await this.saveRefreshToken(id, refreshToken);
       request.res.cookie('refresh_token', savedRefreshToken.token, { httpOnly: true });
 
-      return {
-        token: accessToken,
-        userInfo: {
-          ...request.user,
-        },
-      };
+      return { token: accessToken, userInfo: { ...request.user } };
     } catch (err) {
       throw err;
     }
@@ -89,11 +84,7 @@ export class AuthLibService {
       const otp = generateOtpCode();
 
       await this.redisRepository.set(email, otp, 900);
-      await this.mailSenderService.sendEmail(
-        email,
-        'Account Verification',
-        `Verification Code: ${otp}, this code is valid for 15 minutes.`,
-      );
+      await this.mailSenderService.sendEmail(email, 'Account Verification', `Verification Code: ${otp}, this code is valid for 15 minutes.`);
 
       return 'Verification code has been sent';
     } catch (err) {
@@ -101,9 +92,9 @@ export class AuthLibService {
     }
   }
 
-  async verifyAccount(reqUser: UserWithoutPassword, otpDto: OtpDto) {
+  async verifyAccount(user: UserWithoutPassword, otpDto: OtpDto) {
     try {
-      const { email } = reqUser;
+      const { email } = user;
 
       const savedCode = Number(await this.redisRepository.get(email));
 
@@ -111,7 +102,6 @@ export class AuthLibService {
 
       if (otpDto.code !== savedCode) throw new ConflictException('Provided otp is wrong');
 
-      const user = await this.userRepository.findOne({ where: { email } });
       user.isVerified = true;
       await user.save();
       await this.redisRepository.del([email]);
@@ -128,10 +118,7 @@ export class AuthLibService {
       const tokenExists = await this.refreshTokenRepository.findOne({ where: { userId } });
       if (tokenExists) return tokenExists;
 
-      const entity: IRefreshToken = {
-        userId,
-        token,
-      };
+      const entity: IRefreshToken = { userId, token };
 
       return await this.refreshTokenRepository.createToken(entity);
     } catch (err) {

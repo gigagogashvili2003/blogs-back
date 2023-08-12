@@ -10,12 +10,10 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TaskLibModule } from '@app/task-lib';
 @Module({
   imports: [
-    TaskLibModule,
-    JwtModule.register({
-      global: true,
-    }),
-    ScheduleModule.forRoot(),
     ConfigModule.forRoot({ isGlobal: true }),
+    JwtModule.register({ global: true }),
+    ScheduleModule.forRoot(),
+    TaskLibModule,
     AuthModule,
     DbLibModule,
     UsersModule,

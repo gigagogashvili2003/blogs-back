@@ -4,7 +4,6 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { UserRepository } from '@app/users-lib';
 import { CryptoLibService } from '@app/utils-lib';
 import { LOCAL } from '../constants';
-import { where } from 'sequelize';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
@@ -16,12 +15,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
   }
   async validate(email: string, password: string): Promise<any> {
     try {
-      console.log(email, password);
-      const user = (await this.userRepository.findOne({ where: { email } })).get({ plain: true });
+      const user = await this.userRepository.findOne({ where: { email } });
+      if (!user) throw new UnauthorizedException('Invalid Credentials!');
 
-      if (!user) throw new UnauthorizedException();
-
-      const { password: hashedPassword, ...userWithoutPassword } = user;
+      const { password: hashedPassword, ...userWithoutPassword } = user.dataValues;
 
       const doesPasswordsMatch = await this.cryptoService.comparePassword(password, hashedPassword);
 

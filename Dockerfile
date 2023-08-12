@@ -1,20 +1,23 @@
-# Use the official Node.js LTS (Long Term Support) image as the base image
+# Base image
 FROM node:18-alpine
 
-# Set the working directory inside the container
+# Create and set working directory
 WORKDIR /app
 
-# Copy the package.json and package-lock.json to the container
-COPY package*.json ./
+# Copy project files
+COPY . .
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application files to the container
-COPY . .
 
-# Expose the port your NestJS app is listening on
-EXPOSE 3000
+# Expose port
+EXPOSE 8000
 
-# Command to start the application in watch mode
-CMD ["npm", "run", "start:dev"]
+# RUN npm run typeorm-generate-migrations
+
+# RUN npm run typeorm-run-migrations
+
+
+# Run migrations
+CMD npm run start:dev
