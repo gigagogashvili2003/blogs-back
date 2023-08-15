@@ -24,4 +24,8 @@ export class RedisLibRepository implements RedisReporitoryInterface {
   async del(key: RedisKey[]): Promise<number> {
     return await this.redisClient.del(...key);
   }
+
+  async getTimeToLive(key: RedisKey) {
+    return this.redisClient.ttl(key);
+  }
 }

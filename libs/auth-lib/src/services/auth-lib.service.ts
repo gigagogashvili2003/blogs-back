@@ -51,7 +51,11 @@ export class AuthLibService {
 
   async signin(request: RequestWithUser<User>) {
     try {
-      const { id, email, username, isDeactivated } = request.user;
+      const { id, email, username, isDeactivated, isDisabled } = request.user;
+
+      if (isDisabled) {
+        throw new ConflictException("Your cann't sign in cause your account is disabled for 15 minutes!");
+      }
 
       // Cancel deactivation if deactivated
       if (isDeactivated) {

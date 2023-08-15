@@ -22,6 +22,22 @@ export class User extends Model<User> {
   @Column({
     type: DataType.BOOLEAN,
     allowNull: false,
+    field: 'is_disabled',
+    defaultValue: false,
+  })
+  isDisabled: boolean;
+
+  @Column({
+    type: DataType.DATE,
+    allowNull: true,
+    field: 'account_disable_time',
+    defaultValue: null,
+  })
+  accountDisableTime: Date | null;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
     field: 'is_deactivated',
     defaultValue: false,
   })

@@ -84,6 +84,12 @@
       ],
       "@app/task-lib/*": [
         "libs/task-lib/src/*"
+      ],
+      "@app/security-lib": [
+        "libs/security-lib/src"
+      ],
+      "@app/security-lib/*": [
+        "libs/security-lib/src/*"
       ]
     }
   }

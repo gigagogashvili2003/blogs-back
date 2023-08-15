@@ -4,10 +4,15 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { UserRepository } from '@app/users-lib';
 import { CryptoLibService } from '@app/utils-lib';
 import { LOCAL } from '../constants';
+import { SecurityLibService } from '@app/security-lib';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
-  constructor(private readonly userRepository: UserRepository, private readonly cryptoService: CryptoLibService) {
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly securityLibService: SecurityLibService,
+    private readonly cryptoService: CryptoLibService,
+  ) {
     super({
       usernameField: 'email',
       passwordField: 'password',
@@ -22,7 +27,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
 
       const doesPasswordsMatch = await this.cryptoService.comparePassword(password, hashedPassword);
 
-      if (!doesPasswordsMatch) throw new ConflictException('Invalid Password!');
+      if (!doesPasswordsMatch) {
+        await this.securityLibService.handleIncorrectPasswordAttempts(user);
+        throw new ConflictException('Invalid Password!');
+      }
 
       return userWithoutPassword;
     } catch (err) {

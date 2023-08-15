@@ -27,6 +27,19 @@ export class UsersLibService {
     }
   }
 
+  async disableAccount(user: UserWithoutPassword) {
+    try {
+      const { isDisabled } = user;
+      if (isDisabled) throw new ConflictException('Account is already disabled!');
+
+      user.isDisabled = true;
+      user.accountDisableTime = new Date();
+      await user.save();
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async deactivateAccount(user: UserWithoutPassword) {
     try {
       const { isDeactivated } = user;
