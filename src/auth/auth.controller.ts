@@ -1,7 +1,7 @@
-import { AccessTokenGuard, AuthLibService, RefreshTokenGuard } from '@app/auth-lib';
+import { AccessTokenGuard, AuthLibService, DeactivatedDisabledAccountInterceptor, RefreshTokenGuard } from '@app/auth-lib';
 import { CreateUserDto } from '@app/users-lib/dtos.ts/create-user.dto';
 import { LocalGuard } from '@app/auth-lib/guards/local-strategy.guard';
-import { Body, Controller, Post, Req, UseGuards, Get } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards, Get, UseInterceptors } from '@nestjs/common';
 import { RequestWithUser } from '@app/common-lib/interfaces/request-with-user';
 import { User } from '@app/users-lib/entities/user.entity';
 import { OtpDto } from '@app/users-lib/dtos.ts/otp.dto';
@@ -15,6 +15,7 @@ export class AuthController {
     return await this.authLibService.signup(createUserDto);
   }
 
+  @UseInterceptors(DeactivatedDisabledAccountInterceptor)
   @UseGuards(LocalGuard)
   @Post('signin')
   async signin(@Req() request: RequestWithUser<User>) {

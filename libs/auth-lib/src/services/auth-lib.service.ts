@@ -21,7 +21,6 @@ export class AuthLibService {
     private readonly jwtService: JwtService,
     private readonly redisRepository: RedisLibRepository,
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    private readonly usersLibService: UsersLibService,
   ) {}
 
   async signup(createUserDto: CreateUserDto) {
@@ -51,21 +50,7 @@ export class AuthLibService {
 
   async signin(request: RequestWithUser<User>) {
     try {
-      const { id, email, username, isDeactivated, isDisabled } = request.user;
-
-      if (isDisabled) {
-        throw new ConflictException("Your cann't sign in cause your account is disabled for 15 minutes!");
-      }
-
-      // Cancel deactivation if deactivated
-      if (isDeactivated) {
-        await this.usersLibService.cancelDeactivation(request.user);
-        await this.mailSenderService.sendEmail(
-          email,
-          'Account Deactivation',
-          'while your account was deactivated, you logged in the system, for that reason account deactivation process has been cancelled.',
-        );
-      }
+      const { id, email, username } = request.user;
 
       const payload: UserJwtPayload = { userId: id, email, username };
 
