@@ -24,7 +24,7 @@ export class DeactivatedDisabledAccountInterceptor implements NestInterceptor {
     }
 
     if (user.isDisabled) {
-      throw new ConflictException("Your cann't sign in cause your account is disabled for 15 minutes!");
+      throw new ConflictException("You cann't sign in cause account is disabled for 15 minutes!");
     }
 
     return next.handle();

@@ -13,15 +13,3 @@ export interface IUser {
   isDeactivated: boolean;
   accountDeactivationDate: Date | null;
 }
-
-export interface IUserResponse {
-  firstName: string;
-  lastName: string;
-  email: string;
-  username: string;
-  birthDate: Date;
-  role: UserRole;
-  isVerified: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
-}

@@ -2,7 +2,7 @@ import { UserWithoutPassword } from '@app/common-lib/interfaces/request-with-use
 import { MailSenderService } from '@app/notifications-lib';
 import { RedisLibRepository } from '@app/redis-lib';
 import { UsersLibService } from '@app/users-lib';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 
 @Injectable()
 export class SecurityLibService {
@@ -29,6 +29,7 @@ export class SecurityLibService {
           'Account Security',
           'Cause of many incorrect password attempts, your account is disabled for 15 minutes!',
         );
+        throw new UnauthorizedException('Your account has been disabled for 15 minutes!');
       } else {
         await this.redisRepository.set(formattedKey, newValue, newTime);
       }

@@ -106,7 +106,7 @@ export class User extends Model<User> {
     },
     defaultValue: UserRole.USER,
   })
-  role: UserRole;
+  role: string;
 
   @Column({
     field: 'is_verified',

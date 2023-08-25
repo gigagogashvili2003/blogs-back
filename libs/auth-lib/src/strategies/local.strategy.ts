@@ -23,6 +23,10 @@ export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
       const user = await this.userRepository.findOne({ where: { email } });
       if (!user) throw new UnauthorizedException('Invalid Credentials!');
 
+      if (user.isDisabled) {
+        throw new ConflictException("You cann't sign in cause your account is disabled for 15 minutes!");
+      }
+
       const { password: hashedPassword, ...userWithoutPassword } = user.dataValues;
 
       const doesPasswordsMatch = await this.cryptoService.comparePassword(password, hashedPassword);
