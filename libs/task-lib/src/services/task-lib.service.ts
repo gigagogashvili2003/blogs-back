@@ -5,10 +5,10 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class TaskLibService {
-  constructor(private readonly userRepository: UserRepository, private readonly mailSenderService: MailSenderService) {}
+  public constructor(private readonly userRepository: UserRepository, private readonly mailSenderService: MailSenderService) {}
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async handleDeactivatedUsersJob() {
+  public async handleDeactivatedUsersJob() {
     try {
       const currentDate = new Date();
 
@@ -31,7 +31,7 @@ export class TaskLibService {
   }
 
   @Cron(CronExpression.EVERY_5_MINUTES)
-  async handleDisabledUsers() {
+  public async handleDisabledUsers() {
     try {
       const currentDate = new Date();
 

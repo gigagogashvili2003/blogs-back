@@ -1,9 +1,8 @@
 import { MailSenderService } from '@app/notifications-lib';
-import { UserRepository, UsersLibService } from '@app/users-lib';
 import { CreateUserDto } from '@app/users-lib/dtos.ts/create-user.dto';
 import { User } from '@app/users-lib/entities/user.entity';
 import { CryptoLibService, JwtService, generateOtpCode } from '@app/utils-lib';
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { RedisLibRepository } from '@app/redis-lib';
 import { RequestWithUser, UserWithoutPassword } from '@app/common-lib/interfaces/request-with-user';
 import { UserJwtPayload } from '@app/utils-lib/interfaces/user-jwt.payload';
@@ -14,11 +13,13 @@ import { OtpDto } from '@app/users-lib/dtos.ts/otp.dto';
 import { PasswordInstructionsDto } from '@app/users-lib/dtos.ts/forgot-password-instructions.dto';
 import { ForgotPasswordDto } from '@app/users-lib/dtos.ts/forgot-password.dto';
 import { RedisKeyTypes } from '@app/common-lib/types/redis.types';
+import { UserRepositoryInterface } from '@app/users-lib/interfaces/user-repository.interface';
+import { USERS_REPOSITORY } from '@app/users-lib/constants/user.constants';
 
 @Injectable()
 export class AuthLibService {
-  constructor(
-    private readonly userRepository: UserRepository,
+  public constructor(
+    @Inject(USERS_REPOSITORY) private readonly userRepository: UserRepositoryInterface,
     private readonly cryptoService: CryptoLibService,
     private readonly mailSenderService: MailSenderService,
     private readonly jwtService: JwtService,
@@ -26,7 +27,7 @@ export class AuthLibService {
     private readonly refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  async signup(createUserDto: CreateUserDto) {
+  public async signup(createUserDto: CreateUserDto) {
     try {
       const { password, email, username } = createUserDto;
 
@@ -40,7 +41,7 @@ export class AuthLibService {
 
       await this.mailSenderService.sendEmail(email, 'Signup Notification', 'You have succesfully signed up');
 
-      await this.userRepository.createUser({
+      await this.userRepository.create({
         ...createUserDto,
         password: hashedPassword,
       });
@@ -51,7 +52,7 @@ export class AuthLibService {
     }
   }
 
-  async signin(request: RequestWithUser<User>) {
+  public async signin(request: RequestWithUser<User>) {
     try {
       const { id, email, username } = request.user;
 
@@ -69,7 +70,7 @@ export class AuthLibService {
     }
   }
 
-  async sendVerificationCode(user: UserWithoutPassword, type: RedisKeyTypes, subject: string) {
+  public async sendVerificationCode(user: UserWithoutPassword, type: RedisKeyTypes, subject: string) {
     try {
       if (type === RedisKeyTypes.ACCOUNT_VERIFICATION) {
         if (user.isVerified) throw new ConflictException('User is already verified!');
@@ -77,7 +78,7 @@ export class AuthLibService {
       const { email } = user;
       const otp = generateOtpCode();
 
-      await this.redisRepository.set(type ? type : email, otp, 900);
+      await this.redisRepository.set(type ? `${type}_${email}` : email, otp, 900);
       await this.mailSenderService.sendEmail(email, subject, `Verification Code: ${otp}, this code is valid for 15 minutes.`);
 
       return 'Verification code has been sent';
@@ -86,11 +87,12 @@ export class AuthLibService {
     }
   }
 
-  async verifyAccount(user: UserWithoutPassword, otpDto: OtpDto) {
+  public async verifyAccount(user: UserWithoutPassword, otpDto: OtpDto) {
     try {
       const { email } = user;
 
-      const savedCode = Number(await this.redisRepository.get(email));
+      const redisKey = `${RedisKeyTypes.ACCOUNT_VERIFICATION}_${email}`;
+      const savedCode = Number(await this.redisRepository.get(redisKey));
 
       if (!savedCode) throw new ConflictException('There is not any code that is linked to that email');
 
@@ -98,7 +100,7 @@ export class AuthLibService {
 
       user.isVerified = true;
       await user.save();
-      await this.redisRepository.del([email]);
+      await this.redisRepository.del([redisKey]);
       await this.mailSenderService.sendEmail(email, 'Account Verification', 'Your account has been verified!');
 
       return 'Your account has been verified';
@@ -107,17 +109,18 @@ export class AuthLibService {
     }
   }
 
-  async sendForgotPasswordInstructions(passwordInstructionsDto: PasswordInstructionsDto) {
+  public async sendForgotPasswordInstructions(passwordInstructionsDto: PasswordInstructionsDto) {
     try {
       const { email } = passwordInstructionsDto;
-      const isAlreadyRequested = await this.redisRepository.get(passwordInstructionsDto.email);
-      if (isAlreadyRequested) throw new ConflictException('You already have required password reset in past 15 minutes!');
+      const redisKey = `${RedisKeyTypes.PASSWORD_RESET}_${email}`;
+      const isAlreadyRequested = await this.redisRepository.get(redisKey);
+      if (isAlreadyRequested) throw new ConflictException('You had already required password reset in past 15 minutes!');
 
       const user = await this.userRepository.findOne({ where: { email }, attributes: { exclude: ['password'] } });
-      let message = 'We have send password reset instructions on provided email address!';
+      let message = 'We have sent password reset instructions on the provided email address!';
       if (!user) return { message };
 
-      await this.sendVerificationCode(user, RedisKeyTypes.PASSWORD_RESET, 'Email Verify');
+      await this.sendVerificationCode(user, RedisKeyTypes.PASSWORD_RESET, 'Password Reset');
       return { message };
     } catch (err) {
       throw err;
@@ -131,10 +134,11 @@ export class AuthLibService {
 
       if (!user) throw new NotFoundException('User not found!');
 
-      const code = await this.redisRepository.get(`password_reset_${email}`);
+      const redisKey = `${RedisKeyTypes.PASSWORD_RESET}_${email}`;
+      const code = Number(await this.redisRepository.get(redisKey));
       if (!code) throw new NotFoundException("We cann't find any otp that is linked to this specific users");
 
-      if (Number(code) !== Number(reqCode)) throw new ConflictException('Wrong OTP');
+      if (code !== reqCode) throw new ConflictException('Wrong OTP');
 
       const encryptedNewPassword = await this.cryptoService.hashPassword(newPassword);
       user.password = encryptedNewPassword;
@@ -146,7 +150,7 @@ export class AuthLibService {
     }
   }
 
-  async saveRefreshToken(userId: number, token: string): Promise<RefreshToken> {
+  public async saveRefreshToken(userId: number, token: string): Promise<RefreshToken> {
     try {
       const tokenExists = await this.refreshTokenRepository.findOne({ where: { userId } });
       if (tokenExists) return tokenExists;
@@ -158,7 +162,7 @@ export class AuthLibService {
       throw err;
     }
   }
-  async signout(request: RequestWithUser<User>) {
+  public async signout(request: RequestWithUser<User>) {
     try {
       const { id } = request.user;
       await this.refreshTokenRepository.removeToken(id);
@@ -169,7 +173,7 @@ export class AuthLibService {
     }
   }
 
-  async removeRefreshToken(id: number) {
+  public async removeRefreshToken(id: number) {
     try {
       return await this.refreshTokenRepository.removeToken(id);
     } catch (err) {
@@ -177,7 +181,7 @@ export class AuthLibService {
     }
   }
 
-  async refreshToken(user: UserWithoutPassword) {
+  public async refreshToken(user: UserWithoutPassword) {
     try {
       const { email, username, id } = user;
       const payload: UserJwtPayload = { email, username, userId: id };
@@ -188,7 +192,7 @@ export class AuthLibService {
     }
   }
 
-  async ping() {
+  public async ping() {
     try {
       return 'Pong';
     } catch (err) {

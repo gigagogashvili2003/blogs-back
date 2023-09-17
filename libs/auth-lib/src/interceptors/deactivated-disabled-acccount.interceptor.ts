@@ -12,7 +12,7 @@ export class DeactivatedDisabledAccountInterceptor implements NestInterceptor {
 
   public async intercept(context: ExecutionContext, next: CallHandler) {
     const { user: reqUser } = context.switchToHttp().getRequest();
-    const user = await this.userRepository.findUserWithId(reqUser.id);
+    const user = await this.userRepository.findOneWithId(reqUser.id);
 
     if (user.isDeactivated) {
       await this.usersLibService.cancelDeactivation(user);

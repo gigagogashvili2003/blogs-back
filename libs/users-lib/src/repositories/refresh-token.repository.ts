@@ -9,14 +9,14 @@ import { RefreshTokenFindOptions } from '../types/refresh-token-repository.types
 export class RefreshTokenRepository implements RefreshTokenRepositoryInterface {
   constructor(@Inject(REFRESH_TOKEN_REPOSITORY) private readonly refreshTokenRepository: typeof RefreshToken) {}
 
-  async createToken(entity: IRefreshToken) {
-    return await this.refreshTokenRepository.create({ ...entity });
+  public createToken(entity: IRefreshToken) {
+    return this.refreshTokenRepository.create({ ...entity });
   }
-  async findOne(options?: RefreshTokenFindOptions): Promise<RefreshToken> {
-    return await this.refreshTokenRepository.findOne(options);
+  public findOne(options?: RefreshTokenFindOptions): Promise<RefreshToken> {
+    return this.refreshTokenRepository.findOne(options);
   }
 
-  async removeToken(id: number) {
+  public async removeToken(id: number) {
     const token = await this.findOne({ where: { id } });
     token.token = null;
     return await token.save();

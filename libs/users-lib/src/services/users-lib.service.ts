@@ -1,12 +1,14 @@
 import { FileService } from '@app/aws-lib/services';
 import { UserWithoutPassword } from '@app/common-lib/interfaces/request-with-user';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { UserRepository } from '../repositories';
+import { UserRepositoryInterface } from '../interfaces/user-repository.interface';
+import { USERS_REPOSITORY } from '../constants/user.constants';
 @Injectable()
 export class UsersLibService {
-  constructor(private readonly fileService: FileService, private readonly userRepository: UserRepository) {}
+  public constructor(private readonly fileService: FileService, @Inject(USERS_REPOSITORY) private readonly userRepository: UserRepositoryInterface) {}
 
-  async uploadAvatar(user: UserWithoutPassword, file: Express.Multer.File) {
+  public async uploadAvatar(user: UserWithoutPassword, file: Express.Multer.File) {
     try {
       const formattedFileName = `${user.username}_${file.fieldname}_${file.originalname}`;
       const url = await this.fileService.upload('blogs-avatars', formattedFileName, file);
@@ -18,7 +20,7 @@ export class UsersLibService {
     }
   }
 
-  async deleteAvatar(user: UserWithoutPassword) {
+  public async deleteAvatar(user: UserWithoutPassword) {
     try {
       user.avatar = null;
       return await user.save();
@@ -27,7 +29,7 @@ export class UsersLibService {
     }
   }
 
-  async disableAccount(user: UserWithoutPassword) {
+  public async disableAccount(user: UserWithoutPassword) {
     try {
       const { isDisabled } = user;
       if (isDisabled) throw new ConflictException('Account is already disabled!');
@@ -40,7 +42,7 @@ export class UsersLibService {
     }
   }
 
-  async deactivateAccount(user: UserWithoutPassword) {
+  public async deactivateAccount(user: UserWithoutPassword) {
     try {
       const { isDeactivated } = user;
 
@@ -56,7 +58,7 @@ export class UsersLibService {
     }
   }
 
-  async cancelDeactivation(user: UserWithoutPassword) {
+  public async cancelDeactivation(user: UserWithoutPassword) {
     try {
       const { isDeactivated } = user;
 
@@ -73,9 +75,9 @@ export class UsersLibService {
     }
   }
 
-  async getCurrentUser(id: number) {
+  public async getCurrentUser(id: number) {
     try {
-      const user = await this.userRepository.findUserWithId(id, { attributes: { exclude: ['password'] } });
+      const user = await this.userRepository.findOneWithId(id, { attributes: { exclude: ['password'] } });
       return { serInfo: user };
     } catch (err) {
       throw err;

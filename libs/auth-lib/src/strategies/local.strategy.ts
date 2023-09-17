@@ -21,6 +21,7 @@ export class LocalStrategy extends PassportStrategy(Strategy, LOCAL) {
   async validate(email: string, password: string): Promise<any> {
     try {
       const user = await this.userRepository.findOne({ where: { email } });
+
       if (!user) throw new UnauthorizedException('Invalid Credentials!');
 
       if (user.isDisabled) {

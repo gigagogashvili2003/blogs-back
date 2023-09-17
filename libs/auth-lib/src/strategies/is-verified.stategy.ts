@@ -16,7 +16,7 @@ export class IsVerifiedStrategy extends PassportStrategy(Strategy, IS_VERIFIED) 
   }
 
   public async validate(payload: UserJwtPayload): Promise<any> {
-    const user = (await this.userRepository.findUserWithId(payload.userId)).get({ plain: true });
+    const user = (await this.userRepository.findOneWithId(payload.userId)).get({ plain: true });
 
     if (!user) {
       throw new UnauthorizedException();

@@ -7,25 +7,25 @@ import { RedisKey, RedisValue } from '../types';
 @Injectable()
 export class RedisLibRepository implements RedisReporitoryInterface {
   private redisClient: Redis;
-  constructor(private readonly configService: ConfigService) {
+  public constructor(private readonly configService: ConfigService) {
     this.redisClient = new Redis({
       host: configService.get<string>('REDIS_HOST'),
       port: configService.get<number>('REDIS_PORT'),
     });
   }
-  async get(key: RedisKey): Promise<string> {
+  public async get(key: RedisKey): Promise<string> {
     return await this.redisClient.get(key);
   }
 
-  async set(key: RedisKey, value: RedisValue, time: number): Promise<any> {
+  public async set(key: RedisKey, value: RedisValue, time: number): Promise<any> {
     return await this.redisClient.set(key, value, 'EX', time || 3600);
   }
 
-  async del(key: RedisKey[]): Promise<number> {
+  public async del(key: RedisKey[]): Promise<number> {
     return await this.redisClient.del(...key);
   }
 
-  async getTimeToLive(key: RedisKey) {
+  public async getTimeToLive(key: RedisKey) {
     return this.redisClient.ttl(key);
   }
 }
