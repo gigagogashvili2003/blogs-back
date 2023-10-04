@@ -118,6 +118,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/security-lib/tsconfig.lib.json"
       }
+    },
+    "posts-lib": {
+      "type": "library",
+      "root": "libs/posts-lib",
+      "entryFile": "index",
+      "sourceRoot": "libs/posts-lib/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/posts-lib/tsconfig.lib.json"
+      }
     }
   }
 }

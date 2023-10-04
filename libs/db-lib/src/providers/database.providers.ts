@@ -3,6 +3,7 @@ import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants/database.
 import databaseConfig from '../configs/database.config';
 import { User } from '@app/users-lib/entities/user.entity';
 import { RefreshToken } from '@app/users-lib/entities/refresh-token.entity';
+import { Post } from 'libs/posts-lib/entities';
 
 export const databaseProviders = [
   {
@@ -23,7 +24,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize({ ...config, define: { underscored: true } });
-      sequelize.addModels([User, RefreshToken]);
+      sequelize.addModels([User, RefreshToken, Post]);
       await sequelize.sync();
       return sequelize;
     },

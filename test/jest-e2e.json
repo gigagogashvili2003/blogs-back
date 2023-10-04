@@ -34,6 +34,8 @@
     "@app/task-lib/(.*)": "<rootDir>/../libs/task-lib/src/$1",
     "@app/task-lib": "<rootDir>/../libs/task-lib/src",
     "@app/security-lib/(.*)": "<rootDir>/../libs/security-lib/src/$1",
-    "@app/security-lib": "<rootDir>/../libs/security-lib/src"
+    "@app/security-lib": "<rootDir>/../libs/security-lib/src",
+    "@app/posts-lib/(.*)": "<rootDir>/../libs/posts-lib/src/$1",
+    "@app/posts-lib": "<rootDir>/../libs/posts-lib/src"
   }
 }

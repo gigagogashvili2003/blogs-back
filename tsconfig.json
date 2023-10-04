@@ -90,6 +90,12 @@
       ],
       "@app/security-lib/*": [
         "libs/security-lib/src/*"
+      ],
+      "@app/posts-lib": [
+        "libs/posts-lib/src"
+      ],
+      "@app/posts-lib/*": [
+        "libs/posts-lib/src/*"
       ]
     }
   }

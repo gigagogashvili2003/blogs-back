@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TaskLibModule } from '@app/task-lib';
+import { PostsModule } from './posts/posts.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -15,6 +16,7 @@ import { TaskLibModule } from '@app/task-lib';
     AuthModule,
     DbLibModule,
     UsersModule,
+    PostsModule,
   ],
   controllers: [],
   providers: [],

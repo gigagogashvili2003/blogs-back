@@ -119,7 +119,8 @@
       "^@app/redis-lib(|/.*)$": "<rootDir>/libs/redis-lib/src/$1",
       "^@app/aws-lib(|/.*)$": "<rootDir>/libs/aws-lib/src/$1",
       "^@app/task-lib(|/.*)$": "<rootDir>/libs/task-lib/src/$1",
-      "^@app/security-lib(|/.*)$": "<rootDir>/libs/security-lib/src/$1"
+      "^@app/security-lib(|/.*)$": "<rootDir>/libs/security-lib/src/$1",
+      "^@app/posts-lib(|/.*)$": "<rootDir>/libs/posts-lib/src/$1"
     }
   }
 }
